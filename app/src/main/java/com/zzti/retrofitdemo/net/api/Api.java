@@ -2,6 +2,7 @@ package com.zzti.retrofitdemo.net.api;
 
 import com.zzti.retrofitdemo.base.BaseResponse;
 import com.zzti.retrofitdemo.bean.LoginBean;
+import com.zzti.retrofitdemo.bean.TagsBean;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -103,9 +104,9 @@ public interface Api {
      * @param staff_id
      * @return
      */
-    @GET("memberservice/queryStaffTag/suppliers/{supplier_id}/operator/{staff_id}/timestamp/{timestamp}")
-    Observable<BaseResponse> queryMemberTag(@Path("supplier_id") String supplier_id,
-                                                @Path("staff_id") String staff_id ,@Path("timestamp") String timestamp);
+    @GET("memberservice/queryStaffTag/suppliers/{supplier_id}/operator/{staff_id}")
+    Observable<BaseResponse<TagsBean>> queryMemberTag(@Path("supplier_id") String supplier_id,
+                                                      @Path("staff_id") String staff_id);
 
 
 

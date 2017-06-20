@@ -9,19 +9,17 @@ import android.widget.Toast;
 
 import com.orhanobut.logger.Logger;
 import com.zzti.retrofitdemo.base.BaseResponse;
-import com.zzti.retrofitdemo.bean.BodyBean;
 import com.zzti.retrofitdemo.bean.LoginBean;
 import com.zzti.retrofitdemo.net.RetrofitManager;
 import com.zzti.retrofitdemo.net.api.Api;
 import com.zzti.retrofitdemo.ui.QueryActivity;
+import com.zzti.retrofitdemo.ui.UploadPhotoActivity;
 import com.zzti.retrofitdemo.util.PreferencesUtils;
 import com.zzti.retrofitdemo.util.ToastUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -39,10 +37,7 @@ public class MainActivity extends AppCompatActivity {
     TextView tvQuery;
     @BindView(R.id.tvAddtag)
     TextView tvAddtag;
-    @BindView(R.id.tvUpdatetag)
-    TextView tvUpdatetag;
-    @BindView(R.id.tvDeletag)
-    TextView tvDeletag;
+
     @BindView(R.id.tvLogo)
     TextView tvLogo;
 
@@ -58,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({R.id.tvLogin, R.id.tvQuery, R.id.tvAddtag, R.id.tvUpdatetag, R.id.tvDeletag, R.id.tvLogo})
+    @OnClick({R.id.tvLogin, R.id.tvQuery, R.id.tvAddtag, R.id.tvLogo})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tvLogin:
@@ -127,8 +122,12 @@ public class MainActivity extends AppCompatActivity {
                             public void onNext(BaseResponse baseResponse) {
 
                                 if(baseResponse.getCode() >= 200 && baseResponse.getCode()<300){
+
                                     ToastUtils.showToast(MainActivity.this,baseResponse.getMsg());
+
+
                                 }else{
+                                    ToastUtils.showToast(MainActivity.this,baseResponse.getMsg());
 
                                 }
 
@@ -136,78 +135,6 @@ public class MainActivity extends AppCompatActivity {
 
                  });
 
-
-                break;
-
-            case R.id.tvDeletag:
-
-                BodyBean bodyBean = new BodyBean();
-                bodyBean.setSupplier_id("1");
-                bodyBean.setOperator_id("53");
-                bodyBean.setTagids("240");
-
-
-                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), bodyBean.toString());
-
-                RetrofitManager.getInstance().createReq(Api.class).deletMemberTag("1", "53", body,getTime()).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<BaseResponse>() {
-                            @Override
-                            public void onCompleted() {
-
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-
-
-                            }
-
-                            @Override
-                            public void onNext(BaseResponse baseResponse) {
-
-                                if(baseResponse.getCode() >= 200 && baseResponse.getCode()<300){
-                                    ToastUtils.showToast(MainActivity.this,baseResponse.getMsg());
-                                }else{
-
-                                }
-
-                            }
-
-                        });
-                break;
-
-            case R.id.tvUpdatetag:
-
-                staff_id = PreferencesUtils.getString(MainActivity.this,"staff_id");
-                supply_id = PreferencesUtils.getString(MainActivity.this,"supply_id");
-
-                RetrofitManager.getInstance().createReq(Api.class).updateMemberTag(supply_id, staff_id,supply_id,  staff_id,"53", "240",getTime()).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<BaseResponse>() {
-                            @Override
-                            public void onCompleted() {
-
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-
-
-                            }
-
-                            @Override
-                            public void onNext(BaseResponse baseResponse) {
-
-                                if(baseResponse.getCode() >= 200 && baseResponse.getCode()<300){
-                                    ToastUtils.showToast(MainActivity.this,baseResponse.getMsg());
-                                }else{
-
-                                }
-
-                            }
-
-                        });
                 break;
 
             case R.id.tvQuery:
@@ -217,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.tvLogo:
 
-               Intent intent = new Intent(MainActivity.this, TestActivity.class);
+               Intent intent = new Intent(MainActivity.this, UploadPhotoActivity.class);
                startActivity(intent);
                 break;
         }

@@ -146,7 +146,7 @@ public class RspCheckInterceptor implements Interceptor{
                 .newBuilder()
 //                .addQueryParameter("clienttype", String.valueOf(NetConstants.CLIENT_TYPE_ANDROID))
 //                .addQueryParameter("version","" )
-//                .addQueryParameter("timestamp", String.valueOf(System.currentTimeMillis()))
+                .addQueryParameter("timestamp", String.valueOf(System.currentTimeMillis()))
                 .build();
 
         //添加签名

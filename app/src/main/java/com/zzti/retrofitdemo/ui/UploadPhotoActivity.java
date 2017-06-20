@@ -1,4 +1,4 @@
-package com.zzti.retrofitdemo;
+package com.zzti.retrofitdemo.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,12 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.zzti.retrofitdemo.ActionSheet;
+import com.zzti.retrofitdemo.R;
 import com.zzti.retrofitdemo.base.BaseResponse;
-import com.zzti.retrofitdemo.bean.filesbean;
 import com.zzti.retrofitdemo.net.RetrofitManager;
 import com.zzti.retrofitdemo.net.api.Api;
 import com.zzti.retrofitdemo.util.FileUtil;
@@ -24,21 +22,18 @@ import com.zzti.retrofitdemo.util.ImageUtils;
 import com.zzti.retrofitdemo.util.ToastUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 /**
  * @author fengyonggge
  * @date 2017/2/7
  */
-public class TestActivity extends AppCompatActivity {
+public class UploadPhotoActivity extends AppCompatActivity {
 
     TextView tv_test;
     public static Uri cropImageUri;
@@ -90,7 +85,7 @@ public class TestActivity extends AppCompatActivity {
                     public void onNext(BaseResponse baseResponse) {
 
                         if(baseResponse.getCode() >= 200 && baseResponse.getCode()<300){
-                            ToastUtils.showToast(TestActivity.this,baseResponse.getMsg());
+                            ToastUtils.showToast(UploadPhotoActivity.this,baseResponse.getMsg());
                         }else{
 
                         }
@@ -102,7 +97,7 @@ public class TestActivity extends AppCompatActivity {
 
 
     private void choosePhoto() {
-        ActionSheet.showPhotoSheet(TestActivity.this,
+        ActionSheet.showPhotoSheet(UploadPhotoActivity.this,
                 new ActionSheet.OnActionSheetSelected() {
 
                     @Override
@@ -134,7 +129,7 @@ public class TestActivity extends AppCompatActivity {
     }
 
     private void showTakePicture() {
-        ImageUtils.imageUriFromCamera = ImageUtils.createImagePathUri(TestActivity.this);
+        ImageUtils.imageUriFromCamera = ImageUtils.createImagePathUri(UploadPhotoActivity.this);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // MediaStore.EXTRA_OUTPUT参数不设置时,系统会自动生成一个uri,但是只会返回一个缩略图
         // 返回图片在onActivityResult中通过以下代码获取
@@ -157,13 +152,13 @@ public class TestActivity extends AppCompatActivity {
             // 如果是直接从相册获取
             case 1:
                 if (data != null) {
-                    cropImage(TestActivity.this, data.getData(), false);
+                    cropImage(UploadPhotoActivity.this, data.getData(), false);
                 }
                 break;
             // 如果是调用相机拍照时
             case ImageUtils.GET_IMAGE_BY_CAMERA:
                 if (ImageUtils.imageUriFromCamera != null && resultCode == -1) {
-                    cropImage(TestActivity.this, ImageUtils.imageUriFromCamera, false);
+                    cropImage(UploadPhotoActivity.this, ImageUtils.imageUriFromCamera, false);
                 }
                 break;
             // 取得裁剪后的图片
@@ -175,15 +170,15 @@ public class TestActivity extends AppCompatActivity {
                     Log.i("fyg", "裁剪后的图片cropImageUri"+cropImageUri);
 
                     int degree = ImageUtils.getBitmapDegree(ImageUtils.getAbsoluteImagePath(
-                            TestActivity.this, cropImageUri));
+                            UploadPhotoActivity.this, cropImageUri));
                     String bitmap_url;
                     if (degree == 0) {
                         bitmap_url = cropMyImage(ImageUtils.rotateBitmapByDegree(
                                 ImageUtils.getimage(ImageUtils.getAbsoluteImagePath(
-                                        TestActivity.this, cropImageUri)), degree));
+                                        UploadPhotoActivity.this, cropImageUri)), degree));
                     } else {
                         bitmap_url = cropMyImage(ImageUtils.getimage(
-                                ImageUtils.getAbsoluteImagePath(TestActivity.this,
+                                ImageUtils.getAbsoluteImagePath(UploadPhotoActivity.this,
                                         cropImageUri)));
                     }
 

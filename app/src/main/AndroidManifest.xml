@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TestActivity" />
+        <activity android:name=".ui.UploadPhotoActivity" />
         <activity android:name=".ui.QueryActivity"></activity>
     </application>
 
