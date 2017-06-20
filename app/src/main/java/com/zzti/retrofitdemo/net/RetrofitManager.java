@@ -5,6 +5,7 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.zzti.retrofitdemo.AppConfig;
+import com.zzti.retrofitdemo.net.api.Api;
 import com.zzti.retrofitdemo.net.interceptor.RspCheckInterceptor;
 
 import java.util.concurrent.TimeUnit;
@@ -81,4 +82,6 @@ public class RetrofitManager {
     public <T> T createReq(Class<T> reqServer){
         return mRetrofit.create(reqServer);
     }
+
+
 }

@@ -15,12 +15,13 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.zzti.retrofitdemo.api.Api;
-import com.zzti.retrofitdemo.bean.WrapperRspEntity1;
+import com.zzti.retrofitdemo.base.BaseResponse;
 import com.zzti.retrofitdemo.bean.filesbean;
 import com.zzti.retrofitdemo.net.RetrofitManager;
+import com.zzti.retrofitdemo.net.api.Api;
 import com.zzti.retrofitdemo.util.FileUtil;
 import com.zzti.retrofitdemo.util.ImageUtils;
+import com.zzti.retrofitdemo.util.ToastUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,10 +30,14 @@ import java.util.List;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-
+/**
+ * @author fengyonggge
+ * @date 2017/2/7
+ */
 public class TestActivity extends AppCompatActivity {
 
     TextView tv_test;
@@ -69,30 +74,29 @@ public class TestActivity extends AppCompatActivity {
 
         RetrofitManager.getInstance().createReq(Api.class).uplogo(description,body).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<WrapperRspEntity1>() {
+                .subscribe(new Subscriber<BaseResponse>() {
                     @Override
-                    public void call(WrapperRspEntity1 wrapperRspEntity) {
+                    public void onCompleted() {
 
-                        if(wrapperRspEntity.isSuccess()){
+                    }
 
-                            JSONObject jsonObject =  JSON.parseObject(wrapperRspEntity.getData().toString());
+                    @Override
+                    public void onError(Throwable e) {
 
-                            List<filesbean> list = new ArrayList<>();
-                            list.addAll(JSON.parseArray(jsonObject.getString("files"),filesbean.class));
-                            String s =  list.get(0).getUrl();
-                            Toast.makeText(TestActivity.this, s, Toast.LENGTH_SHORT).show();
 
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse baseResponse) {
+
+                        if(baseResponse.getCode() >= 200 && baseResponse.getCode()<300){
+                            ToastUtils.showToast(TestActivity.this,baseResponse.getMsg());
                         }else{
-//                            Toast.makeText(TestActivity.this, wrapperRspEntity.getMsg().toString(), Toast.LENGTH_SHORT).show();
+
                         }
 
                     }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
 
-                        Toast.makeText(TestActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
                 });
     }
 

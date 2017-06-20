@@ -3,24 +3,27 @@ package com.zzti.retrofitdemo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.gson.Gson;
-import com.zzti.retrofitdemo.api.Api;
+
+import com.orhanobut.logger.Logger;
+import com.zzti.retrofitdemo.base.BaseResponse;
 import com.zzti.retrofitdemo.bean.BodyBean;
 import com.zzti.retrofitdemo.bean.LoginBean;
-import com.zzti.retrofitdemo.bean.WrapperRspEntity;
 import com.zzti.retrofitdemo.net.RetrofitManager;
+import com.zzti.retrofitdemo.net.api.Api;
+import com.zzti.retrofitdemo.ui.QueryActivity;
+import com.zzti.retrofitdemo.util.PreferencesUtils;
+import com.zzti.retrofitdemo.util.ToastUtils;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 
@@ -30,235 +33,197 @@ import rx.schedulers.Schedulers;
  */
 public class MainActivity extends AppCompatActivity {
 
-    TextView tv_login,tv_addtag,tv_deletag,tv_query,tv_updatetag,tv_logo;
+    @BindView(R.id.tvLogin)
+    TextView tvLogin;
+    @BindView(R.id.tvQuery)
+    TextView tvQuery;
+    @BindView(R.id.tvAddtag)
+    TextView tvAddtag;
+    @BindView(R.id.tvUpdatetag)
+    TextView tvUpdatetag;
+    @BindView(R.id.tvDeletag)
+    TextView tvDeletag;
+    @BindView(R.id.tvLogo)
+    TextView tvLogo;
+
+    private String supply_id="";
+    private String staff_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        tv_login = (TextView) findViewById(R.id.tv_login);
-        tv_addtag = (TextView) findViewById(R.id.tv_addtag);
-        tv_deletag = (TextView) findViewById(R.id.tv_deletag);
-        tv_query = (TextView) findViewById(R.id.tv_query);
-        tv_updatetag = (TextView) findViewById(R.id.tv_updatetag);
-        tv_logo = (TextView) findViewById(R.id.tv_logo);
+    }
 
 
+    @OnClick({R.id.tvLogin, R.id.tvQuery, R.id.tvAddtag, R.id.tvUpdatetag, R.id.tvDeletag, R.id.tvLogo})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.tvLogin:
 
-        tv_query.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Api loginApi = RetrofitManager.getInstance().createReq(Api.class);
-//                Call<ResponseBody> call = loginApi.queryMemberTag("1", "53");
-//                call.enqueue(new Callback<ResponseBody>() {
-//                    @Override
-//                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                        if (response.isSuccessful()) {
-//                            String str = null;
-//                            try {
-//                                str = response.body().string();
-//
-//
-//                                Log.i("fyg", "后台返回："+str);
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-//
-//                    }
-//                });
-
-                RetrofitManager.getInstance().createReq(Api.class).queryMemberTag("1","53").subscribeOn(Schedulers.io())
+                RetrofitManager.getInstance().createReq(Api.class).loginReq("13661390463", "123456", "1",getTime()).subscribeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<WrapperRspEntity>() {
+                        .subscribe(new Subscriber<BaseResponse<LoginBean>>() {
                             @Override
-                            public void call(WrapperRspEntity wrapperRspEntity) {
+                            public void onCompleted() {
 
-                                if(Integer.parseInt(wrapperRspEntity.getCode().toString())>=200&&
-                                        Integer.parseInt(wrapperRspEntity.getCode().toString())<300){
 
-                                    Toast.makeText(MainActivity.this, wrapperRspEntity.getData().toString(), Toast.LENGTH_SHORT).show();
+                            }
 
+                            @Override
+                            public void onError(Throwable e) {
+
+
+                            }
+
+                            @Override
+                            public void onNext(BaseResponse<LoginBean> loginBeanBaseResponse) {
+
+                                if (loginBeanBaseResponse.getCode() >= 200 &&
+                                        loginBeanBaseResponse.getCode() < 300) {
+
+                                    ToastUtils.showToast(MainActivity.this,loginBeanBaseResponse.getData().getId()+"---"+loginBeanBaseResponse.getData().getSupplier_id());
+
+                                    PreferencesUtils.putString(MainActivity.this,"staff_id",loginBeanBaseResponse.getData().getId());
+                                    PreferencesUtils.putString(MainActivity.this,"supply_id",loginBeanBaseResponse.getData().getSupplier_id());
+
+                                } else {
+                                    Logger.i("报错了");
+
+                                    Toast.makeText(MainActivity.this, loginBeanBaseResponse.getMsg().toString(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                        });
+
+                break;
+
+
+
+            case R.id.tvAddtag:
+
+                staff_id = PreferencesUtils.getString(MainActivity.this,"staff_id");
+                supply_id = PreferencesUtils.getString(MainActivity.this,"supply_id");
+
+
+                RetrofitManager.getInstance().createReq(Api.class).addMemberTag(supply_id, staff_id, "6666", "2",getTime()).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<BaseResponse>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+
+
+                            }
+
+                            @Override
+                            public void onNext(BaseResponse baseResponse) {
+
+                                if(baseResponse.getCode() >= 200 && baseResponse.getCode()<300){
+                                    ToastUtils.showToast(MainActivity.this,baseResponse.getMsg());
                                 }else{
-                                    Toast.makeText(MainActivity.this, wrapperRspEntity.getMsg().toString(), Toast.LENGTH_SHORT).show();
+
                                 }
 
                             }
-                        }, new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
 
-                                Toast.makeText(MainActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                 });
 
-            }
-        });
 
-        tv_addtag.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
 
-                RetrofitManager.getInstance().createReq(Api.class).addMemberTag("1", "53","6666","2").subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<WrapperRspEntity>() {
-                            @Override
-                            public void call(WrapperRspEntity wrapperRspEntity) {
-
-                                if(Integer.parseInt(wrapperRspEntity.getCode().toString())>=200&&
-                                        Integer.parseInt(wrapperRspEntity.getCode().toString())<300){
-
-                                    Toast.makeText(MainActivity.this, wrapperRspEntity.getData().toString(), Toast.LENGTH_SHORT).show();
-
-                                }else{
-                                    Toast.makeText(MainActivity.this, wrapperRspEntity.getMsg().toString(), Toast.LENGTH_SHORT).show();
-                                }
-
-                            }
-                        }, new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-
-                                Toast.makeText(MainActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-            }
-        });
-
-        tv_deletag.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-//                Map<String,String> map = new HashMap<String,String>();
-//                map.put("tagids","234");
+            case R.id.tvDeletag:
 
                 BodyBean bodyBean = new BodyBean();
                 bodyBean.setSupplier_id("1");
                 bodyBean.setOperator_id("53");
                 bodyBean.setTagids("240");
 
-                Log.i("fyg","---"+bodyBean.toString());
 
-                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),bodyBean.toString());
+                RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), bodyBean.toString());
 
-                RetrofitManager.getInstance().createReq(Api.class).deletMemberTag("1","53", body).subscribeOn(Schedulers.io())
+                RetrofitManager.getInstance().createReq(Api.class).deletMemberTag("1", "53", body,getTime()).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<WrapperRspEntity>() {
+                        .subscribe(new Subscriber<BaseResponse>() {
                             @Override
-                            public void call(WrapperRspEntity wrapperRspEntity) {
+                            public void onCompleted() {
 
-                                if(Integer.parseInt(wrapperRspEntity.getCode().toString())>=200&&
-                                        Integer.parseInt(wrapperRspEntity.getCode().toString())<300){
+                            }
 
-                                    Toast.makeText(MainActivity.this, wrapperRspEntity.getData().toString(), Toast.LENGTH_SHORT).show();
+                            @Override
+                            public void onError(Throwable e) {
 
+
+                            }
+
+                            @Override
+                            public void onNext(BaseResponse baseResponse) {
+
+                                if(baseResponse.getCode() >= 200 && baseResponse.getCode()<300){
+                                    ToastUtils.showToast(MainActivity.this,baseResponse.getMsg());
                                 }else{
-                                    Toast.makeText(MainActivity.this, wrapperRspEntity.getMsg().toString(), Toast.LENGTH_SHORT).show();
+
                                 }
 
                             }
-                        }, new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
 
-                                Toast.makeText(MainActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
                         });
-            }
-        });
+                break;
 
+            case R.id.tvUpdatetag:
 
+                staff_id = PreferencesUtils.getString(MainActivity.this,"staff_id");
+                supply_id = PreferencesUtils.getString(MainActivity.this,"supply_id");
 
-        tv_updatetag.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Map<String,String> map = new HashMap<String,String>();
-//                map.put("supplier_id","1");
-//                map.put("operator_id","53");
-//                map.put("name","888");
-//                map.put("tagid","240");
-                RetrofitManager.getInstance().createReq(Api.class).updateMemberTag("1","53","1","53","888","240").subscribeOn(Schedulers.io())
+                RetrofitManager.getInstance().createReq(Api.class).updateMemberTag(supply_id, staff_id,supply_id,  staff_id,"53", "240",getTime()).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<WrapperRspEntity>() {
+                        .subscribe(new Subscriber<BaseResponse>() {
                             @Override
-                            public void call(WrapperRspEntity wrapperRspEntity) {
+                            public void onCompleted() {
 
-                                if(Integer.parseInt(wrapperRspEntity.getCode().toString())>=200&&
-                                        Integer.parseInt(wrapperRspEntity.getCode().toString())<300){
+                            }
 
-                                    Toast.makeText(MainActivity.this, wrapperRspEntity.getData().toString(), Toast.LENGTH_SHORT).show();
+                            @Override
+                            public void onError(Throwable e) {
 
+
+                            }
+
+                            @Override
+                            public void onNext(BaseResponse baseResponse) {
+
+                                if(baseResponse.getCode() >= 200 && baseResponse.getCode()<300){
+                                    ToastUtils.showToast(MainActivity.this,baseResponse.getMsg());
                                 }else{
-                                    Toast.makeText(MainActivity.this, wrapperRspEntity.getMsg().toString(), Toast.LENGTH_SHORT).show();
+
                                 }
 
                             }
-                        }, new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
 
-                                Toast.makeText(MainActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
                         });
-            }
-        });
+                break;
 
+            case R.id.tvQuery:
 
+                startActivity(new Intent(MainActivity.this, QueryActivity.class));
 
-        tv_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case R.id.tvLogo:
 
-                RetrofitManager.getInstance().createReq(Api.class).loginReq("15201649365", "123456a", "1").subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<WrapperRspEntity>() {
-                            @Override
-                            public void call(WrapperRspEntity wrapperRspEntity) {
-
-                                if(Integer.parseInt(wrapperRspEntity.getCode().toString())>=200&&
-                                        Integer.parseInt(wrapperRspEntity.getCode().toString())<300){
-
-//                                    LoginBean loginBean =JSON.parseObject(wrapperRspEntity.getData().toString(), LoginBean.class);
-                                    Gson gson = new Gson();
-                                    LoginBean loginBean = gson.fromJson(wrapperRspEntity.getData().toString(),LoginBean.class);
-
-                                    Toast.makeText(MainActivity.this,loginBean.getStaff_image(), Toast.LENGTH_SHORT).show();
-
-                                }else{
-                                    Toast.makeText(MainActivity.this, wrapperRspEntity.getMsg().toString(), Toast.LENGTH_SHORT).show();
-                                }
-
-                            }
-                        }, new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-
-                                Toast.makeText(MainActivity.this, throwable.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-            }
-        });
-
-
-        tv_logo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent =new Intent(MainActivity.this,TestActivity.class);
-                startActivity(intent);
-
-            }
-        });
-
+               Intent intent = new Intent(MainActivity.this, TestActivity.class);
+               startActivity(intent);
+                break;
+        }
     }
 
-
- }
+    private String getTime() {
+        return System.currentTimeMillis() + "";
+    }
+}

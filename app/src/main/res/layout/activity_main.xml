@@ -8,11 +8,11 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.jason.retrofitdemo.com.zzti.retrofitdemo.MainActivity">
+    >
 
 
     <TextView
-        android:id="@+id/tv_login"
+        android:id="@+id/tvLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="登录"
@@ -21,7 +21,7 @@
 
 
     <TextView
-        android:id="@+id/tv_query"
+        android:id="@+id/tvQuery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -30,7 +30,7 @@
 
 
     <TextView
-        android:id="@+id/tv_addtag"
+        android:id="@+id/tvAddtag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="添加标签"
@@ -38,7 +38,7 @@
         />
 
     <TextView
-        android:id="@+id/tv_updatetag"
+        android:id="@+id/tvUpdatetag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -46,7 +46,7 @@
         />
 
     <TextView
-        android:id="@+id/tv_deletag"
+        android:id="@+id/tvDeletag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -54,7 +54,7 @@
         />
 
     <TextView
-        android:id="@+id/tv_logo"
+        android:id="@+id/tvLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"

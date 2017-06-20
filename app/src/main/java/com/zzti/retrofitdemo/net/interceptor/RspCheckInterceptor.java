@@ -3,10 +3,7 @@ package com.zzti.retrofitdemo.net.interceptor;
 
 import android.util.Log;
 
-import com.zzti.retrofitdemo.util.InterceptorUtils;
-import com.zzti.retrofitdemo.util.MD5;
-
-import org.json.JSONObject;
+import encrypt.Sha1;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -31,8 +28,8 @@ import okhttp3.Response;
 public class RspCheckInterceptor implements Interceptor{
 
 
-    private static String appSecret="app123!@#";
-    private String publicKey="app123456";
+    private  String publicKey="DGAIC6F0SW5BTV56";
+    static String appSecret="D$GAS@WQK8QD19$I";
 
     @Override
     public Response intercept(Chain chain) throws IOException {
@@ -51,8 +48,9 @@ public class RspCheckInterceptor implements Interceptor{
                     request = addPutParams(request);
                 }
                 response = chain.proceed(request);
-                JSONObject jsonObject = new JSONObject(InterceptorUtils.getRspData(response.body()));
-                Log.i("fyg","jsonObject:"+jsonObject);
+
+//                JSONObject jsonObject = new JSONObject(InterceptorUtils.getRspData(response.body()));
+//                Log.i("fyg","jsonObject:"+jsonObject);
 
             }catch (Exception e){
                 if (e instanceof IOException){
@@ -165,7 +163,6 @@ public class RspCheckInterceptor implements Interceptor{
                     httpUrl.queryParameterValues(nameList.get(i)).size() > 0 ? httpUrl.queryParameterValues(nameList.get(i)).get(0) : "");
         }
 
-
         httpUrl = httpUrl.newBuilder()
 
                 .addQueryParameter("sign", toMD5(buffer.toString()))
@@ -215,19 +212,27 @@ public class RspCheckInterceptor implements Interceptor{
     }
 
 
-
     public static String toMD5(String or_Sign) {
-//      String sign = MD5.getMessageDigest(or_Sign.getBytes()).toUpperCase();
         String sign = null;
         or_Sign = appSecret+or_Sign+appSecret;
         Log.i("fyg","-加密前-"+or_Sign);
-        try {
-            sign = MD5.getMessageDigest(or_Sign.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+//        try {
+////            sign = MD5.getMessageDigest(or_Sign.getBytes("UTF-8"));
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
+
+        sign = Sha1.shaEncrypt(or_Sign);
+
         return sign;
     }
+
+
+
+    private String getTime() {
+        return System.currentTimeMillis() + "";
+    }
+
 
 
 }

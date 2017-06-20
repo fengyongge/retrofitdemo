@@ -1,18 +1,14 @@
-package com.zzti.retrofitdemo.api;
+package com.zzti.retrofitdemo.net.api;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.zzti.retrofitdemo.bean.WrapperRspEntity;
-import com.zzti.retrofitdemo.bean.WrapperRspEntity1;
+import com.zzti.retrofitdemo.base.BaseResponse;
+import com.zzti.retrofitdemo.bean.LoginBean;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.Field;
-import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.HTTP;
@@ -22,7 +18,6 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import retrofit2.http.QueryMap;
 import rx.Observable;
 
 
@@ -32,6 +27,7 @@ import rx.Observable;
  */
 
 public interface Api {
+
     /**
      * 登陆
      * @param userName
@@ -40,31 +36,8 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("staffservice/login")
-    Observable<WrapperRspEntity> loginReq(@Field("mobile") String userName, @Field("password") String pwd, @Field("visitSource") String visitSource);
-
-
-    /**
-     * 查询标签
-     * @param supplier_id
-     * @param staff_id
-     * @return
-     */
-    @GET("memberservice/queryStaffTag/suppliers/{supplier_id}/operator/{staff_id}")
-    Observable<WrapperRspEntity> queryMemberTag(@Path("supplier_id") String supplier_id,
-                                      @Path("staff_id") String staff_id);
-
-    /**
-     * 获取会员列表
-     * @param supplier_id
-     * @param staff_id
-     * @param page
-     * @param per_page
-     * @return
-     */
-    @GET("memberservice/suppliers/{supplier_id}/staffs/{staff_id}")
-    Call<ResponseBody> getMembers(@Path("supplier_id") String supplier_id,
-                                  @Path("staff_id") String staff_id,
-                                  @Query("page") String page,@Query("per_page") String per_page);
+    Observable<BaseResponse<LoginBean>> loginReq(@Field("mobile") String userName, @Field("password") String pwd,
+                                                 @Field("visitSource") String visitSource, @Field("timestamp") String timestamp);
 
 
     /**
@@ -77,9 +50,9 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("memberservice/addMemberTag/suppliers/{supplier_id}/operator/{staff_id}")
-    Observable<WrapperRspEntity> addMemberTag(@Path("supplier_id") String supplier_id,
-                                    @Path("staff_id") String staff_id,
-                                    @Field("name") String name,@Field("type") String type);
+    Observable<BaseResponse> addMemberTag(@Path("supplier_id") String supplier_id,
+                                              @Path("staff_id") String staff_id,
+                                              @Field("name") String name, @Field("type") String type,@Field("timestamp") String timestamp);
 
     /**
      * 删除标签
@@ -89,9 +62,9 @@ public interface Api {
      */
 
     @HTTP(method = "DELETE", path = "memberservice/delMemberTag/suppliers/{supplier_id}/operator/{operator_id}", hasBody = true)
-    Observable<WrapperRspEntity> deletMemberTag(@Path("supplier_id") String supplier_id,
-                                      @Path("operator_id") String operator_id,
-                                                @Body RequestBody tagids);
+    Observable<BaseResponse> deletMemberTag(@Path("supplier_id") String supplier_id,
+                                                @Path("operator_id") String operator_id,
+                                                @Body RequestBody tagids,@Path("timestamp") String timestamp);
 
 
     /**
@@ -103,12 +76,13 @@ public interface Api {
 
     @FormUrlEncoded
     @PUT("memberservice/updateMemberTag/suppliers/{supplier_id}/operator/{operator_id}")
-    Observable<WrapperRspEntity> updateMemberTag(@Path("supplier_id") String supplier_id,
-                                       @Path("operator_id") String operator_id,
-                                       @Field("supplier_id") String supplier_id1,
-                                       @Field("operator_id") String operator_id1,
-                                       @Field("name") String name,
-                                       @Field("tagid") String tagid);
+    Observable<BaseResponse> updateMemberTag(@Path("supplier_id") String supplier_id,
+                                                 @Path("operator_id") String operator_id,
+                                                 @Field("supplier_id") String supplier_id1,
+                                                 @Field("operator_id") String operator_id1,
+                                                 @Field("name") String name,
+                                                 @Field("tagid") String tagid,@Field("timestamp") String timestamp);
+
 
 //    /**
 //     * 修改标签
@@ -123,16 +97,41 @@ public interface Api {
 //                                                 @FieldMap Map<String, String> map);
 
 
+    /**
+     * 查询标签
+     * @param supplier_id
+     * @param staff_id
+     * @return
+     */
+    @GET("memberservice/queryStaffTag/suppliers/{supplier_id}/operator/{staff_id}/timestamp/{timestamp}")
+    Observable<BaseResponse> queryMemberTag(@Path("supplier_id") String supplier_id,
+                                                @Path("staff_id") String staff_id ,@Path("timestamp") String timestamp);
+
+
+
+    /**
+     * 获取会员列表
+     * @param supplier_id
+     * @param staff_id
+     * @param page
+     * @param per_page
+     * @return
+     */
+    @GET("memberservice/suppliers/{supplier_id}/staffs/{staff_id}")
+    Call<ResponseBody> getMembers(@Path("supplier_id") String supplier_id,
+                                  @Path("staff_id") String staff_id,
+                                  @Query("page") String page, @Query("per_page") String per_page);
+
     @Multipart
     @POST("/upload")
-    Observable<WrapperRspEntity> upload(
+    Observable<BaseResponse> upload(
             @Part("portrait") RequestBody description,
             @Part MultipartBody.Part file);
 
 
     @Multipart
     @POST("file-storage/upload-avatar")
-    Observable<WrapperRspEntity1> uplogo(
+    Observable<BaseResponse> uplogo(
             @Part("avatar_url") RequestBody description,
             @Part MultipartBody.Part file);
 

@@ -7,6 +7,6 @@ package com.zzti.retrofitdemo;
 public class AppConfig {
     public static final boolean DEBUG = true;
 
-    public static final String BASE_URL = "http://qiye.tsdccore.**.com/sdc/v1/";
+    public static final String BASE_URL = "http://qiye.tsdccore.ediankai.com/sdc/v1/";
     public final static String NET_DOMAIN ="http://api.**.com/v1/";
 }
