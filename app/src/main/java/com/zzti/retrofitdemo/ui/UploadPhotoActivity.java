@@ -84,8 +84,8 @@ public class UploadPhotoActivity extends AppCompatActivity {
                     @Override
                     public void onNext(BaseResponse baseResponse) {
 
-                        if(baseResponse.getCode() >= 200 && baseResponse.getCode()<300){
-                            ToastUtils.showToast(UploadPhotoActivity.this,baseResponse.getMsg());
+                        if(baseResponse.code >= 200 && baseResponse.code<300){
+                            ToastUtils.showToast(UploadPhotoActivity.this,baseResponse.msg);
                         }else{
 
                         }

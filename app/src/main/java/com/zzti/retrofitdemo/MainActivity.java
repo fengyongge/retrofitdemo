@@ -4,17 +4,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.orhanobut.logger.Logger;
 import com.zzti.retrofitdemo.base.BaseResponse;
 import com.zzti.retrofitdemo.bean.LoginBean;
+import com.zzti.retrofitdemo.dialog.AlertHelper;
+import com.zzti.retrofitdemo.myinterface.SweetAlertCallBack;
 import com.zzti.retrofitdemo.net.RetrofitManager;
 import com.zzti.retrofitdemo.net.api.Api;
 import com.zzti.retrofitdemo.ui.QueryActivity;
 import com.zzti.retrofitdemo.ui.UploadPhotoActivity;
 import com.zzti.retrofitdemo.util.PreferencesUtils;
+import com.zzti.retrofitdemo.util.StringUtils;
 import com.zzti.retrofitdemo.util.ToastUtils;
 
 import butterknife.BindView;
@@ -40,8 +45,12 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.tvLogo)
     TextView tvLogo;
+    @BindView(R.id.ivPhoto)
+    ImageView ivPhoto;
+    @BindView(R.id.tvName)
+    TextView tvName;
 
-    private String supply_id="";
+    private String supply_id = "";
     private String staff_id;
 
     @Override
@@ -58,38 +67,31 @@ public class MainActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.tvLogin:
 
-                RetrofitManager.getInstance().createReq(Api.class).loginReq("13661390463", "123456", "1",getTime()).subscribeOn(Schedulers.io())
+                RetrofitManager.getInstance().createReq(Api.class).loginReq("13661390463", "123456", "1", getTime()).subscribeOn(Schedulers.io())
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<BaseResponse<LoginBean>>() {
                             @Override
                             public void onCompleted() {
 
-
                             }
 
                             @Override
                             public void onError(Throwable e) {
 
+                                ToastUtils.showToast(MainActivity.this,e.getMessage());
 
                             }
 
                             @Override
                             public void onNext(BaseResponse<LoginBean> loginBeanBaseResponse) {
 
-                                if (loginBeanBaseResponse.getCode() >= 200 &&
-                                        loginBeanBaseResponse.getCode() < 300) {
 
-                                    ToastUtils.showToast(MainActivity.this,loginBeanBaseResponse.getData().getId()+"---"+loginBeanBaseResponse.getData().getSupplier_id());
+                                PreferencesUtils.putString(MainActivity.this, "staff_id", loginBeanBaseResponse.data.getId());
+                                PreferencesUtils.putString(MainActivity.this, "supply_id", loginBeanBaseResponse.data.getSupplier_id());
 
-                                    PreferencesUtils.putString(MainActivity.this,"staff_id",loginBeanBaseResponse.getData().getId());
-                                    PreferencesUtils.putString(MainActivity.this,"supply_id",loginBeanBaseResponse.getData().getSupplier_id());
-
-                                } else {
-                                    Logger.i("报错了");
-
-                                    Toast.makeText(MainActivity.this, loginBeanBaseResponse.getMsg().toString(), Toast.LENGTH_SHORT).show();
-                                }
+                                StringUtils.filtNull(tvName,loginBeanBaseResponse.data.getUsername());
+                                ImageLoader.getInstance().displayImage(loginBeanBaseResponse.data.getStaff_image(),ivPhoto);
                             }
 
                         });
@@ -97,43 +99,48 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
 
-
             case R.id.tvAddtag:
 
-                staff_id = PreferencesUtils.getString(MainActivity.this,"staff_id");
-                supply_id = PreferencesUtils.getString(MainActivity.this,"supply_id");
+                staff_id = PreferencesUtils.getString(MainActivity.this, "staff_id");
+                supply_id = PreferencesUtils.getString(MainActivity.this, "supply_id");
 
 
-                RetrofitManager.getInstance().createReq(Api.class).addMemberTag(supply_id, staff_id, "6666", "2",getTime()).subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<BaseResponse>() {
-                            @Override
-                            public void onCompleted() {
+                AlertHelper.create2EditAlert(MainActivity.this, "确定", "取消", "是否创建", new SweetAlertCallBack() {
+                    @Override
+                    public void onConfirm(String data) {
 
-                            }
+                        RetrofitManager.getInstance().createReq(Api.class).addMemberTag(supply_id, staff_id, data, "2", getTime()).subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Subscriber<BaseResponse>() {
+                                    @Override
+                                    public void onCompleted() {
 
-                            @Override
-                            public void onError(Throwable e) {
+                                    }
 
+                                    @Override
+                                    public void onError(Throwable e) {
 
-                            }
+                                        ToastUtils.showToast(MainActivity.this, e.getMessage());
 
-                            @Override
-                            public void onNext(BaseResponse baseResponse) {
+                                    }
 
-                                if(baseResponse.getCode() >= 200 && baseResponse.getCode()<300){
+                                    @Override
+                                    public void onNext(BaseResponse baseResponse) {
 
-                                    ToastUtils.showToast(MainActivity.this,baseResponse.getMsg());
+                                        ToastUtils.showToast(MainActivity.this, baseResponse.msg);
 
+                                    }
 
-                                }else{
-                                    ToastUtils.showToast(MainActivity.this,baseResponse.getMsg());
+                                });
 
-                                }
+                    }
 
-                            }
+                    @Override
+                    public void onCancle() {
 
-                 });
+                    }
+                });
+
 
                 break;
 
@@ -144,8 +151,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.tvLogo:
 
-               Intent intent = new Intent(MainActivity.this, UploadPhotoActivity.class);
-               startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, UploadPhotoActivity.class);
+                startActivity(intent);
                 break;
         }
     }

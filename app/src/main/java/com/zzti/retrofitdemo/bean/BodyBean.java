@@ -9,6 +9,16 @@ public class BodyBean {
     private String supplier_id;
     private String operator_id;
     private String tagids;
+    private String timestamp;
+
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
 
     public String getSupplier_id() {
         return supplier_id;

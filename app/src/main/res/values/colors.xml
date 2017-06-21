@@ -11,6 +11,9 @@
     <color name="view_color">#EBEBEB</color>
     <color name="bottom_color">#F5F5F5</color>
     <color name="alertdialog_line">#c6c6c6</color>
+    <color name="float_transparent">#66000000</color>
+    <color name="sweet_dialog_bg_color">#FFFFFF</color>
+    <color name="light_grey">#B9B9B9</color>
 
 
 </resources>

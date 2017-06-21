@@ -1,8 +1,11 @@
 package com.zzti.retrofitdemo.net.api;
 
 import com.zzti.retrofitdemo.base.BaseResponse;
+import com.zzti.retrofitdemo.bean.BodyBean;
 import com.zzti.retrofitdemo.bean.LoginBean;
 import com.zzti.retrofitdemo.bean.TagsBean;
+
+import java.util.HashMap;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -61,11 +64,11 @@ public interface Api {
      * @param operator_id
      * @return
      */
-
     @HTTP(method = "DELETE", path = "memberservice/delMemberTag/suppliers/{supplier_id}/operator/{operator_id}", hasBody = true)
     Observable<BaseResponse> deletMemberTag(@Path("supplier_id") String supplier_id,
                                                 @Path("operator_id") String operator_id,
-                                                @Body RequestBody tagids,@Path("timestamp") String timestamp);
+                                                @Body RequestBody content);
+
 
 
     /**
@@ -79,11 +82,11 @@ public interface Api {
     @PUT("memberservice/updateMemberTag/suppliers/{supplier_id}/operator/{operator_id}")
     Observable<BaseResponse> updateMemberTag(@Path("supplier_id") String supplier_id,
                                                  @Path("operator_id") String operator_id,
+
                                                  @Field("supplier_id") String supplier_id1,
                                                  @Field("operator_id") String operator_id1,
                                                  @Field("name") String name,
                                                  @Field("tagid") String tagid,@Field("timestamp") String timestamp);
-
 
 //    /**
 //     * 修改标签
@@ -106,9 +109,8 @@ public interface Api {
      */
     @GET("memberservice/queryStaffTag/suppliers/{supplier_id}/operator/{staff_id}")
     Observable<BaseResponse<TagsBean>> queryMemberTag(@Path("supplier_id") String supplier_id,
-                                                      @Path("staff_id") String staff_id);
-
-
+                                                      @Path("staff_id") String staff_id,
+                                                      @Query("timestamp") String timestamp);
 
     /**
      * 获取会员列表
@@ -136,20 +138,5 @@ public interface Api {
             @Part("avatar_url") RequestBody description,
             @Part MultipartBody.Part file);
 
-
-//    public UrlBean useredit(final Context context, String token,
-//                            String merchant_id) {
-//        String noncestr = getNoncestr();
-//        String time = getTime();
-//        Map<String, String> map = new TreeMap<String, String>();
-//
-//
-//
-//        String sortString = sort(token, map);
-//        String sign = toMD5(sortString);
-//
-//        final String apiUri = NET_DOMAIN + "?c=useredit" + "&sign=" + sign;
-//        return new UrlBean(apiUri, noncestr, time, version);
-//    }
 
 }
