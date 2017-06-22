@@ -6,6 +6,7 @@ import com.zzti.retrofitdemo.bean.LoginBean;
 import com.zzti.retrofitdemo.bean.TagsBean;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -20,8 +21,10 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Part;
+import retrofit2.http.PartMap;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 import rx.Observable;
 
 
@@ -58,6 +61,9 @@ public interface Api {
                                               @Path("staff_id") String staff_id,
                                               @Field("name") String name, @Field("type") String type,@Field("timestamp") String timestamp);
 
+
+
+
     /**
      * 删除标签
      * @param supplier_id
@@ -66,8 +72,8 @@ public interface Api {
      */
     @HTTP(method = "DELETE", path = "memberservice/delMemberTag/suppliers/{supplier_id}/operator/{operator_id}", hasBody = true)
     Observable<BaseResponse> deletMemberTag(@Path("supplier_id") String supplier_id,
-                                                @Path("operator_id") String operator_id,
-                                                @Body RequestBody content);
+                                            @Path("operator_id") String operator_id,
+                                            @Body RequestBody content);
 
 
 
@@ -77,7 +83,6 @@ public interface Api {
      * @param operator_id
      * @return
      */
-
     @FormUrlEncoded
     @PUT("memberservice/updateMemberTag/suppliers/{supplier_id}/operator/{operator_id}")
     Observable<BaseResponse> updateMemberTag(@Path("supplier_id") String supplier_id,
@@ -99,6 +104,9 @@ public interface Api {
 //    Observable<WrapperRspEntity> updateMemberTag(@Path("supplier_id") String supplier_id,
 //                                                 @Path("operator_id") String operator_id,
 //                                                 @FieldMap Map<String, String> map);
+
+
+
 
 
     /**
@@ -125,6 +133,13 @@ public interface Api {
                                   @Path("staff_id") String staff_id,
                                   @Query("page") String page, @Query("per_page") String per_page);
 
+
+    /**
+     * 上传头像
+     * @param description
+     * @param file
+     * @return
+     */
     @Multipart
     @POST("/upload")
     Observable<BaseResponse> upload(
@@ -132,11 +147,26 @@ public interface Api {
             @Part MultipartBody.Part file);
 
 
+    /***
+     * 多图
+     * @param partMap
+     * @param file
+     * @return
+     */
+    @Multipart
+    @POST
+    Observable<ResponseBody> uploadFileWithPartMap(
+            @PartMap() Map<String, RequestBody> partMap,
+            @Part  MultipartBody.Part file);
+
+
     @Multipart
     @POST("file-storage/upload-avatar")
     Observable<BaseResponse> uplogo(
             @Part("avatar_url") RequestBody description,
             @Part MultipartBody.Part file);
+
+
 
 
 }

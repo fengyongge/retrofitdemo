@@ -25,20 +25,26 @@ import com.zzti.retrofitdemo.util.PreferencesUtils;
 import com.zzti.retrofitdemo.util.ProgressHelps;
 import com.zzti.retrofitdemo.util.ToastUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.observers.SafeSubscriber;
 import rx.schedulers.Schedulers;
+
+import static com.zzti.retrofitdemo.net.interceptor.RspCheckInterceptor.toMD5;
 
 
 /**
@@ -49,11 +55,13 @@ public class QueryActivity extends AppCompatActivity {
 
     @BindView(R.id.lv)
     ListView lv;
-
     private String staff_id,supply_id;
     List<TagsBean.TagBean> list = new ArrayList<>();
-
     Dialog dialog;
+    private boolean isClear;
+
+    private  String publicKey="DGAIC6F0SW5BTV56";
+    static String appSecret="D$GAS@WQK8QD19$I";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +71,13 @@ public class QueryActivity extends AppCompatActivity {
 
         staff_id = PreferencesUtils.getString(QueryActivity.this,"staff_id");
         supply_id = PreferencesUtils.getString(QueryActivity.this,"supply_id");
+        loadMore();
+    }
 
 
+    public void loadMore(){
         dialog = ProgressHelps.createWindowsBar(QueryActivity.this);
+
 
         RetrofitManager.getInstance().createReq(Api.class).queryMemberTag(supply_id, staff_id,getTime()).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -88,6 +100,9 @@ public class QueryActivity extends AppCompatActivity {
                     @Override
                     public void onNext(BaseResponse<TagsBean> baseResponse) {
 
+                        if(isClear){
+                            list.clear();
+                        }
 
                         if(dialog!=null&&dialog.isShowing()){
                             dialog.dismiss();
@@ -97,10 +112,11 @@ public class QueryActivity extends AppCompatActivity {
                         Adapter adapter = new Adapter(list);
                         lv.setAdapter(adapter);
                         adapter.notifyDataSetChanged();
+
+                        isClear=true;
                     }
 
                 });
-
 
     }
 
@@ -152,9 +168,7 @@ public class QueryActivity extends AppCompatActivity {
                                         public void onNext(BaseResponse baseResponse) {
 
                                             ToastUtils.showToast(QueryActivity.this,baseResponse.msg);
-
                                             tvTagName.setText(data);
-
                                         }
 
                                     });
@@ -181,51 +195,66 @@ public class QueryActivity extends AppCompatActivity {
 
                             dialog = ProgressHelps.createWindowsBar(QueryActivity.this);
 
+                            Map<String, String> map = new TreeMap<String, String>();
+                            map.put("timestamp", getTime());
+                            map.put("supplier_id", supply_id);
+                            map.put("operator_id", staff_id);
+                            map.put("tagids", list.get(position).getId());
+                            String sortString = sort(appSecret, map);
+                            Logger.i("签名之前："+sortString);
+                            String sign = toMD5(sortString);
+
                             BodyBean bodyBean = new BodyBean();
                             bodyBean.setTagids(list.get(position).getId());
                             bodyBean.setTimestamp(getTime());
                             bodyBean.setSupplier_id(supply_id);
                             bodyBean.setOperator_id(staff_id);
-                            String content = JSON.toJSONString(bodyBean);
-                            RequestBody  body = FormBody.create(MediaType.parse("application/json; charset=utf-8"),content);
+                            bodyBean.setSign(sign);
+                            bodyBean.setPublicKey(publicKey);
 
-//                            HashMap<String, String> hashMap = new HashMap();
-//                            hashMap.put("supply_id",supply_id);
-//                            hashMap.put("timestamp",getTime());
-//                            hashMap.put("tagids",list.get(position).getId());
+//                            String content = JSON.toJSONString(bodyBean);
+//                            RequestBody  body = FormBody.create(MediaType.parse("application/json; charset=utf-8"),bodyBean.toString());
+
+                            HashMap<String, String> hashMap = new HashMap();
+                            hashMap.put("supply_id",supply_id);
+                            hashMap.put("timestamp",getTime());
+                            hashMap.put("tagids",list.get(position).getId());
+                            String content =  getpParameter(map,sign);
+//                            String content =  getpParameter2(map,sign);
+                            RequestBody  body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"),content);
+
 
                             RetrofitManager.getInstance().createReq(Api.class).deletMemberTag(supply_id, staff_id, body).subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe(new Subscriber<BaseResponse>() {
-                                        @Override
-                                        public void onCompleted() {
+                                                   @Override
+                                                   public void onCompleted() {
 
-                                        }
+                                                   }
 
-                                        @Override
-                                        public void onError(Throwable e) {
+                                                   @Override
+                                                   public void onError(Throwable e) {
+                                                       if(dialog!=null&&dialog.isShowing()){
+                                                           dialog.dismiss();
+                                                       }
 
-                                            if(dialog!=null&&dialog.isShowing()){
-                                                dialog.dismiss();
-                                            }
+                                                       ToastUtils.showToast(QueryActivity.this,e.getMessage());
+                                                   }
 
-                                            ToastUtils.showToast(QueryActivity.this,e.getMessage());
+                                                   @Override
+                                                   public void onNext(BaseResponse baseResponse) {
 
-                                        }
+                                                       if(dialog!=null&&dialog.isShowing()){
+                                                            dialog.dismiss();
+                                                        }
 
-                                        @Override
-                                        public void onNext(BaseResponse baseResponse) {
+                                                     ToastUtils.showToast(QueryActivity.this,baseResponse.msg);
 
-                                            if(dialog!=null&&dialog.isShowing()){
-                                                dialog.dismiss();
-                                            }
+                                                       loadMore();
 
-                                            ToastUtils.showToast(QueryActivity.this,baseResponse.msg);
+                                                   }
+                                               });
 
-
-                                        }
-
-                                    });
 
 
                         }
@@ -253,40 +282,81 @@ public class QueryActivity extends AppCompatActivity {
     private String getTime() {
         return System.currentTimeMillis() + "";
     }
-//
-//    public List<Param>  getParameter(Map<String,String> map, String sign){
-//
-//        Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
-//        List<Param> params = new ArrayList<>();
-//        while (it.hasNext()) {
-//            Map.Entry<String, String> entry = it.next();
-//            params.add(new Param(entry.getKey(),entry.getValue()!= null && entry.getValue().length()
-//                    > 0 ? entry.getValue() : ""));
-//        }
-//        params.add(new Param("sign", sign));
-//        params.add(new Param("publicKey", publicKey));
-//        return params;
-//    }
-//
-//
-//    public static class Param {
-//        String key;
-//        String value;
-//        public Param() {
-//        }
-//        public Param(String key, String value) {
-//            this.key = key;
-//            this.value = value;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return "Param{" +
-//                    "key='" + key + '\'' +
-//                    ", value='" + value + '\'' +
-//                    '}';
-//        }
-//    }
+
+
+
+    public String getpParameter(Map<String,String> map,String sign){
+        StringBuilder buffer = new StringBuilder();
+        Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, String> entry = it.next();
+            buffer.append("&").append(entry.getKey()).append("=").append(
+                    entry.getValue()!= null && entry.getValue().length()
+                            > 0 ? entry.getValue() : "");
+        }
+        String parameterString = buffer.toString();
+        String s2="";
+        if(parameterString.length()>0){
+            s2 = parameterString.substring(1,parameterString.length());
+            s2+= "&sign="+ sign +"&publicKey="+publicKey;
+        }
+        return s2;
+    }
+
+
+    public String getpParameter2(Map<String,String> map,String sign){
+        StringBuilder buffer = new StringBuilder();
+        Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, String> entry = it.next();
+            buffer.append("&").append(entry.getKey()).append("=").append(
+                    entry.getValue()!= null && entry.getValue().length()
+                            > 0 ? entry.getValue() : "");
+        }
+        String parameterString = buffer.toString();
+        String s2="";
+        if(parameterString.length()>0){
+            s2 = parameterString.substring(1,parameterString.length());
+//            s2+= "&sign="+ sign +"&publicKey="+publicKey;
+        }
+        return s2;
+    }
+
+
+    public static class Param {
+        String key;
+        String value;
+        public Param() {
+        }
+        public Param(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return "Param{" +
+                    "key='" + key + '\'' +
+                    ", value='" + value + '\'' +
+                    '}';
+        }
+    }
+
+
+    public final static String sort(String token, Map<String, String> map) {
+
+        Iterator<String> iter = map.keySet().iterator();
+        String s = token;
+        while (iter.hasNext()) {
+            Object key = iter.next();
+            StringBuffer sb = new StringBuffer();
+            s += sb.append(key + map.get(key));
+        }
+        String ss = s + token;
+        Logger.i("签名之前" + ss);
+        return ss;
+    }
+
 
 
 

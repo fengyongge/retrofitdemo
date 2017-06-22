@@ -53,21 +53,24 @@ public class UploadPhotoActivity extends AppCompatActivity {
     }
 
 
-    public void loadMore(String filepath){
+    public void loadMore(String filepath) {
+
         File file = new File(filepath);
+        // 创建 RequestBody，用于封装构建RequestBody
         RequestBody requestFile =
-                RequestBody.create(MediaType.parse("application/otcet-stream"), file);
+                RequestBody.create(MediaType.parse("multipart/form-data"), file);
 
+        // MultipartBody.Part  和后端约定好Key，这里的partName是用image
         MultipartBody.Part body =
-                MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+                MultipartBody.Part.createFormData("image", file.getName(), requestFile);
 
-        String descriptionString = "";
-
+        // 添加描述
+        String descriptionString = "hello, 这是文件描述";
         RequestBody description =
                 RequestBody.create(
                         MediaType.parse("multipart/form-data"), descriptionString);
 
-        RetrofitManager.getInstance().createReq(Api.class).uplogo(description,body).subscribeOn(Schedulers.io())
+        RetrofitManager.getInstance().createReq(Api.class).upload(description, body)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<BaseResponse>() {
                     @Override
@@ -77,21 +80,14 @@ public class UploadPhotoActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-
-
+                        ToastUtils.showToast(UploadPhotoActivity.this, e.getMessage());
                     }
 
                     @Override
                     public void onNext(BaseResponse baseResponse) {
-
-                        if(baseResponse.code >= 200 && baseResponse.code<300){
-                            ToastUtils.showToast(UploadPhotoActivity.this,baseResponse.msg);
-                        }else{
-
-                        }
+                        ToastUtils.showToast(UploadPhotoActivity.this, baseResponse.msg);
 
                     }
-
                 });
     }
 
@@ -193,7 +189,6 @@ public class UploadPhotoActivity extends AppCompatActivity {
 
 
 
-
     /**
      * 截图
      *
@@ -233,12 +228,4 @@ public class UploadPhotoActivity extends AppCompatActivity {
 
     }
 
-//    private String getTime() {
-//
-//        return System.currentTimeMillis() / 1000 + "";
-//    }
-//
-//    private String getNoncestr() {
-//        return UUID.randomUUID().toString().trim().replaceAll("-", "").trim();
-//    }
 }

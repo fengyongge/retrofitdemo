@@ -6,7 +6,6 @@ import android.util.Log;
 import com.orhanobut.logger.Logger;
 import com.zzti.retrofitdemo.util.InterceptorUtils;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import encrypt.Sha1;
@@ -40,11 +39,10 @@ public class RspCheckInterceptor implements Interceptor{
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Response response = chain.proceed(chain.request());
+        Response response =null;
 
         //先根据接口不同请求方式，进行对参数加密，保证数据安全
             try {
-
                 Request request = chain.request();
 
                 if (request.method().equals("GET")) {
@@ -84,26 +82,26 @@ public class RspCheckInterceptor implements Interceptor{
     }
 
 
+
+
     private Request addDeleteParams(Request request) throws UnsupportedEncodingException {
 
 
-        if (request.body() instanceof RequestBody) {
+        if (request.body() instanceof FormBody) {
 
             FormBody.Builder bodyBuilder = new FormBody.Builder();
-
             FormBody formBody = (FormBody) request.body();
 
-
             for (int i = 0; i < formBody.size(); i++) {
-                    bodyBuilder.addEncoded(formBody.encodedName(i), formBody.encodedValue(i));
-                }
+                bodyBuilder.addEncoded(formBody.encodedName(i), formBody.encodedValue(i));
+            }
+
 
             Map<String, String> bodyMap = new HashMap<>();
             List<String> nameList = new ArrayList<>();
             for (int i = 0; i < formBody.size(); i++) {
                 nameList.add(formBody.encodedName(i));
                 bodyMap.put(formBody.encodedName(i), URLDecoder.decode(formBody.encodedValue(i), "UTF-8"));
-                Logger.i(i+"--"+formBody.encodedName(i)+"---"+URLDecoder.decode(formBody.encodedValue(i)));
             }
             Collections.sort(nameList);
 
@@ -112,14 +110,19 @@ public class RspCheckInterceptor implements Interceptor{
                 builder.append("").append(nameList.get(i)).append("")
                         .append(URLDecoder.decode(bodyMap.get(nameList.get(i)), "UTF-8"));
             }
+
+
             formBody = bodyBuilder.
                     addEncoded("sign", toMD5(builder.toString()))
                     .addEncoded("publicKey",publicKey)
                     .build();
+
             request = request.newBuilder().delete(formBody).build();
 
-        }
 
+
+            Logger.i("33333");
+        }
         return request;
     }
 
@@ -251,11 +254,9 @@ public class RspCheckInterceptor implements Interceptor{
     }
 
 
-
     private String getTime() {
         return System.currentTimeMillis() + "";
     }
-
 
 
 }

@@ -10,7 +10,24 @@ public class BodyBean {
     private String operator_id;
     private String tagids;
     private String timestamp;
+    private String sign;
+    private String publicKey;
 
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
 
     public String getTimestamp() {
         return timestamp;
@@ -44,12 +61,8 @@ public class BodyBean {
         this.operator_id = operator_id;
     }
 
-    @Override
-    public String toString() {
-        return "BodyBean{" +
-                "supplier_id='" + supplier_id + '\'' +
-                ", operator_id='" + operator_id + '\'' +
-                ", tagids='" + tagids + '\'' +
-                '}';
-    }
+
+
+
+
 }
