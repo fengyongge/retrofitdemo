@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import okhttp3.FormBody;
+import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Request;
@@ -86,16 +87,17 @@ public class RspCheckInterceptor implements Interceptor{
 
     private Request addDeleteParams(Request request) throws UnsupportedEncodingException {
 
+        Logger.i("000");
 
-        if (request.body() instanceof FormBody) {
+            if (request.body() instanceof FormBody) {
 
             FormBody.Builder bodyBuilder = new FormBody.Builder();
+
             FormBody formBody = (FormBody) request.body();
 
             for (int i = 0; i < formBody.size(); i++) {
                 bodyBuilder.addEncoded(formBody.encodedName(i), formBody.encodedValue(i));
             }
-
 
             Map<String, String> bodyMap = new HashMap<>();
             List<String> nameList = new ArrayList<>();
@@ -119,9 +121,6 @@ public class RspCheckInterceptor implements Interceptor{
 
             request = request.newBuilder().delete(formBody).build();
 
-
-
-            Logger.i("33333");
         }
         return request;
     }
@@ -152,7 +151,6 @@ public class RspCheckInterceptor implements Interceptor{
         }
 
         httpUrl = httpUrl.newBuilder()
-//                .addQueryParameter("timestamp", String.valueOf(System.currentTimeMillis()))
                 .addQueryParameter("sign", toMD5(buffer.toString()))
                 .addQueryParameter("publicKey",publicKey)
                 .build();

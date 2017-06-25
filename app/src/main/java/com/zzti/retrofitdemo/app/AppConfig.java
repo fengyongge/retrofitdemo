@@ -1,4 +1,4 @@
-package com.zzti.retrofitdemo;
+package com.zzti.retrofitdemo.app;
 
 /**
  * @author fengyonggge

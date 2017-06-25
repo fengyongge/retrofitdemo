@@ -23,6 +23,7 @@ import com.zzti.retrofitdemo.net.RetrofitManager;
 import com.zzti.retrofitdemo.net.api.Api;
 import com.zzti.retrofitdemo.util.PreferencesUtils;
 import com.zzti.retrofitdemo.util.ProgressHelps;
+import com.zzti.retrofitdemo.util.StringUtils;
 import com.zzti.retrofitdemo.util.ToastUtils;
 
 import java.io.File;
@@ -195,34 +196,31 @@ public class QueryActivity extends AppCompatActivity {
 
                             dialog = ProgressHelps.createWindowsBar(QueryActivity.this);
 
+//                            Map<String, String> map = new TreeMap<String, String>();
+//                            map.put("timestamp", getTime());
+//                            map.put("supplier_id", supply_id);
+//                            map.put("operator_id", staff_id);
+//                            map.put("tagids", list.get(position).getId());
+//                            String sortString = sort(appSecret, map);
+//                            Logger.i("签名之前："+sortString);
+//                            String sign = toMD5(sortString);
+//                            HashMap<String, String> hashMap = new HashMap();
+//                            hashMap.put("timestamp",getTime());
+//                            hashMap.put("tagids",list.get(position).getId());
+//                            String content =  getpParameter(map,sign);
+//
+//                            RequestBody  body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"),content);
+
+
                             Map<String, String> map = new TreeMap<String, String>();
                             map.put("timestamp", getTime());
                             map.put("supplier_id", supply_id);
                             map.put("operator_id", staff_id);
                             map.put("tagids", list.get(position).getId());
-                            String sortString = sort(appSecret, map);
-                            Logger.i("签名之前："+sortString);
-                            String sign = toMD5(sortString);
+                            String content =  getpParameter2(map);
 
-                            BodyBean bodyBean = new BodyBean();
-                            bodyBean.setTagids(list.get(position).getId());
-                            bodyBean.setTimestamp(getTime());
-                            bodyBean.setSupplier_id(supply_id);
-                            bodyBean.setOperator_id(staff_id);
-                            bodyBean.setSign(sign);
-                            bodyBean.setPublicKey(publicKey);
-
-//                            String content = JSON.toJSONString(bodyBean);
-//                            RequestBody  body = FormBody.create(MediaType.parse("application/json; charset=utf-8"),bodyBean.toString());
-
-                            HashMap<String, String> hashMap = new HashMap();
-                            hashMap.put("supply_id",supply_id);
-                            hashMap.put("timestamp",getTime());
-                            hashMap.put("tagids",list.get(position).getId());
-                            String content =  getpParameter(map,sign);
-//                            String content =  getpParameter2(map,sign);
-                            RequestBody  body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"),content);
-
+                            MediaType CONTENT_TYPE = MediaType.parse("application/x-www-form-urlencoded");
+                            RequestBody  body = FormBody.create(CONTENT_TYPE,content);
 
                             RetrofitManager.getInstance().createReq(Api.class).deletMemberTag(supply_id, staff_id, body).subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
@@ -304,7 +302,7 @@ public class QueryActivity extends AppCompatActivity {
     }
 
 
-    public String getpParameter2(Map<String,String> map,String sign){
+    public String getpParameter2(Map<String,String> map){
         StringBuilder buffer = new StringBuilder();
         Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
         while (it.hasNext()) {
@@ -317,7 +315,6 @@ public class QueryActivity extends AppCompatActivity {
         String s2="";
         if(parameterString.length()>0){
             s2 = parameterString.substring(1,parameterString.length());
-//            s2+= "&sign="+ sign +"&publicKey="+publicKey;
         }
         return s2;
     }
