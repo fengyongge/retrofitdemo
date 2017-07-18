@@ -1,4 +1,4 @@
-package com.zzti.retrofitdemo.base;
+package com.zzti.retrofitdemo.net;
 
 import com.google.gson.annotations.SerializedName;
 
