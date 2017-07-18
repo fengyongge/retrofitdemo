@@ -5,7 +5,6 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.zzti.retrofitdemo.app.AppConfig;
-import com.zzti.retrofitdemo.net.interceptor.RspCheckInterceptor;
 
 import java.util.concurrent.TimeUnit;
 

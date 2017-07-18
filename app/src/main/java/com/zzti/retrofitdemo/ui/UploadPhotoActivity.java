@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.zzti.retrofitdemo.ActionSheet;
 import com.zzti.retrofitdemo.R;
-import com.zzti.retrofitdemo.base.BaseResponse;
+import com.zzti.retrofitdemo.net.BaseResponse;
 import com.zzti.retrofitdemo.net.RetrofitManager;
 import com.zzti.retrofitdemo.net.api.Api;
 import com.zzti.retrofitdemo.util.FileUtil;
@@ -28,7 +28,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+
 /**
  * @author fengyonggge
  * @date 2017/2/7

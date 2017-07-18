@@ -6,11 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.orhanobut.logger.Logger;
-import com.zzti.retrofitdemo.base.BaseResponse;
+import com.zzti.retrofitdemo.net.BaseResponse;
 import com.zzti.retrofitdemo.bean.LoginBean;
 import com.zzti.retrofitdemo.dialog.AlertHelper;
 import com.zzti.retrofitdemo.myinterface.SweetAlertCallBack;
@@ -22,18 +20,9 @@ import com.zzti.retrofitdemo.util.PreferencesUtils;
 import com.zzti.retrofitdemo.util.StringUtils;
 import com.zzti.retrofitdemo.util.ToastUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
