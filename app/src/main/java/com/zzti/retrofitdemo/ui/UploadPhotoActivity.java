@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.zzti.retrofitdemo.util.ActionSheet;
 import com.zzti.retrofitdemo.R;
-import com.zzti.retrofitdemo.base.BaseResponse;
+import com.zzti.retrofitdemo.net.BaseResponse;
 import com.zzti.retrofitdemo.net.RetrofitManager;
 import com.zzti.retrofitdemo.net.api.Api;
 import com.zzti.retrofitdemo.util.FileUtil;

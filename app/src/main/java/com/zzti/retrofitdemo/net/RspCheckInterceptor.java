@@ -1,4 +1,4 @@
-package com.zzti.retrofitdemo.net.interceptor;
+package com.zzti.retrofitdemo.net;
 
 
 import android.util.Log;

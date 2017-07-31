@@ -10,3 +10,6 @@
 .DS_Store
 /build
 /captures
+app/src/main/java/com/zzti/retrofitdemo/ui/UploadPhotoActivity.java
+app/src/main/java/com/zzti/retrofitdemo/ui/MainActivity.java
+app/src/main/java/com/zzti/retrofitdemo/ui/MainActivity.java

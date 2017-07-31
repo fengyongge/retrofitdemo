@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zzti.retrofitdemo.R;
-import com.zzti.retrofitdemo.base.BaseResponse;
+import com.zzti.retrofitdemo.net.BaseResponse;
 import com.zzti.retrofitdemo.bean.LoginBean;
 import com.zzti.retrofitdemo.dialog.AlertHelper;
 import com.zzti.retrofitdemo.myinterface.SweetAlertCallBack;

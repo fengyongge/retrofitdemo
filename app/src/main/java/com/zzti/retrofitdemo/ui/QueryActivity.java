@@ -9,13 +9,11 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSON;
 import com.orhanobut.logger.Logger;
 import com.zzti.retrofitdemo.R;
 import com.zzti.retrofitdemo.base.BaseCommAdapter;
-import com.zzti.retrofitdemo.base.BaseResponse;
+import com.zzti.retrofitdemo.net.BaseResponse;
 import com.zzti.retrofitdemo.base.ViewHolder;
-import com.zzti.retrofitdemo.bean.BodyBean;
 import com.zzti.retrofitdemo.bean.TagsBean;
 import com.zzti.retrofitdemo.dialog.AlertHelper;
 import com.zzti.retrofitdemo.myinterface.AlertCallback;
@@ -24,12 +22,9 @@ import com.zzti.retrofitdemo.net.RetrofitManager;
 import com.zzti.retrofitdemo.net.api.Api;
 import com.zzti.retrofitdemo.util.PreferencesUtils;
 import com.zzti.retrofitdemo.util.ProgressHelps;
-import com.zzti.retrofitdemo.util.StringUtils;
 import com.zzti.retrofitdemo.util.ToastUtils;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -39,14 +34,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.observers.SafeSubscriber;
 import rx.schedulers.Schedulers;
-
-import static com.zzti.retrofitdemo.net.interceptor.RspCheckInterceptor.toMD5;
 
 
 /**

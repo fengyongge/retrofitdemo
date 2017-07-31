@@ -1,7 +1,6 @@
 package com.zzti.retrofitdemo.net.api;
 
-import com.zzti.retrofitdemo.base.BaseResponse;
-import com.zzti.retrofitdemo.bean.BodyBean;
+import com.zzti.retrofitdemo.net.BaseResponse;
 import com.zzti.retrofitdemo.bean.LoginBean;
 import com.zzti.retrofitdemo.bean.TagsBean;
 
@@ -25,7 +24,6 @@ import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import retrofit2.http.Url;
 import rx.Observable;
 
 
