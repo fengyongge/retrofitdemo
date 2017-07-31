@@ -29,6 +29,7 @@ public class RetrofitManager {
     }
 
     public static synchronized RetrofitManager getInstance(){
+
         if (mRetrofitManager == null){
             mRetrofitManager = new RetrofitManager();
         }
@@ -52,7 +53,6 @@ public class RetrofitManager {
         builder.retryOnConnectionFailure(true);
         OkHttpClient client = builder.build();
 
-
         Gson gson = new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                 .setExclusionStrategies(new ExclusionStrategy() {
@@ -68,7 +68,6 @@ public class RetrofitManager {
                                         })
                 .create();
 
-
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(AppConfig.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
@@ -80,6 +79,5 @@ public class RetrofitManager {
     public <T> T createReq(Class<T> reqServer){
         return mRetrofit.create(reqServer);
     }
-
 
 }

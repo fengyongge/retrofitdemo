@@ -3,12 +3,11 @@ package com.zzti.retrofitdemo.net.interceptor;
 
 import android.util.Log;
 
-import com.orhanobut.logger.Logger;
 import com.zzti.retrofitdemo.util.InterceptorUtils;
 
 import org.json.JSONObject;
 
-import encrypt.Sha1;
+import com.zzti.retrofitdemo.encrypt.Sha1;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -21,11 +20,9 @@ import java.util.Map;
 import java.util.Set;
 
 import okhttp3.FormBody;
-import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -87,9 +84,13 @@ public class RspCheckInterceptor implements Interceptor{
 
     private Request addDeleteParams(Request request) throws UnsupportedEncodingException {
 
-        Logger.i("000");
+
+        Log.i("fyg","11111");
 
             if (request.body() instanceof FormBody) {
+
+                Log.i("fyg","222222");
+
 
             FormBody.Builder bodyBuilder = new FormBody.Builder();
 
@@ -119,7 +120,10 @@ public class RspCheckInterceptor implements Interceptor{
                     .addEncoded("publicKey",publicKey)
                     .build();
 
-            request = request.newBuilder().delete(formBody).build();
+                Log.i("fyg","33333");
+
+
+                request = request.newBuilder().delete(formBody).build();
 
         }
         return request;

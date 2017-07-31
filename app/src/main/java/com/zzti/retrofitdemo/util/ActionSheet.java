@@ -1,4 +1,4 @@
-package com.zzti.retrofitdemo;
+package com.zzti.retrofitdemo.util;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -10,6 +10,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.zzti.retrofitdemo.R;
 
 
 /**

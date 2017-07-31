@@ -6,6 +6,7 @@ import com.zzti.retrofitdemo.bean.LoginBean;
 import com.zzti.retrofitdemo.bean.TagsBean;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.MultipartBody;
@@ -57,7 +58,7 @@ public interface Api {
      */
     @FormUrlEncoded
     @POST("memberservice/addMemberTag/suppliers/{supplier_id}/operator/{staff_id}")
-    Observable<BaseResponse> addMemberTag(@Path("supplier_id") String supplier_id,
+     Observable<BaseResponse> addMemberTag(@Path("supplier_id") String supplier_id,
                                               @Path("staff_id") String staff_id,
                                               @Field("name") String name, @Field("type") String type,@Field("timestamp") String timestamp);
 
@@ -143,31 +144,28 @@ public interface Api {
     @Multipart
     @POST("/upload")
     Observable<BaseResponse> upload(
-            @Part("portrait") RequestBody description,
-            @Part MultipartBody.Part file);
+            @Part("portrait") RequestBody description, @Part MultipartBody.Part file);
 
 
-    /***
-     * 多图
-     * @param partMap
-     * @param file
+    /**
+     * 多图上传
+     * @param supplier_id
+     * @param staff_id
+     * @param meeting_id
+     * @param partList
      * @return
      */
     @Multipart
-    @POST
-    Observable<ResponseBody> uploadFileWithPartMap(
-            @PartMap() Map<String, RequestBody> partMap,
-            @Part  MultipartBody.Part file);
+    @POST("suppliers/{supplier_id}/staff/{staff_id}/meeting/{meeting_id}/upload")
+    Observable<BaseResponse> uploadePics(
+            @Path("supplier_id")String supplier_id,@Path("staff_id")String staff_id,
+            @Path("meeting_id")String meeting_id,@Part List<MultipartBody.Part> partList);
 
 
-    @Multipart
-    @POST("file-storage/upload-avatar")
-    Observable<BaseResponse> uplogo(
-            @Part("avatar_url") RequestBody description,
-            @Part MultipartBody.Part file);
-
-
-
+    Observable<BaseResponse> uploadePics2(
+            @Path("supplier_id")String supplier_id,@Path("staff_id")String staff_id,
+            @Path("meeting_id")String meeting_id,
+            @PartMap Map<String, RequestBody> params);
 
 
 

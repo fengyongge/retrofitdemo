@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -196,31 +197,30 @@ public class QueryActivity extends AppCompatActivity {
 
                             dialog = ProgressHelps.createWindowsBar(QueryActivity.this);
 
-//                            Map<String, String> map = new TreeMap<String, String>();
-//                            map.put("timestamp", getTime());
-//                            map.put("supplier_id", supply_id);
-//                            map.put("operator_id", staff_id);
-//                            map.put("tagids", list.get(position).getId());
-//                            String sortString = sort(appSecret, map);
-//                            Logger.i("签名之前："+sortString);
-//                            String sign = toMD5(sortString);
-//                            HashMap<String, String> hashMap = new HashMap();
-//                            hashMap.put("timestamp",getTime());
-//                            hashMap.put("tagids",list.get(position).getId());
-//                            String content =  getpParameter(map,sign);
-//
-//                            RequestBody  body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"),content);
-
-
                             Map<String, String> map = new TreeMap<String, String>();
                             map.put("timestamp", getTime());
                             map.put("supplier_id", supply_id);
                             map.put("operator_id", staff_id);
                             map.put("tagids", list.get(position).getId());
-                            String content =  getpParameter2(map);
+                            String sortString = sort(appSecret, map);
+                            Logger.i("签名之前："+sortString);
+                            String sign = toMD5(sortString);
+                            HashMap<String, String> hashMap = new HashMap();
+                            hashMap.put("timestamp",getTime());
+                            hashMap.put("tagids",list.get(position).getId());
+                            String content =  getpParameter(map,sign);
+                            RequestBody  body = RequestBody.create(MediaType.parse("application/x-www-form-urlencoded"),content);
 
-                            MediaType CONTENT_TYPE = MediaType.parse("application/x-www-form-urlencoded");
-                            RequestBody  body = FormBody.create(CONTENT_TYPE,content);
+
+//                            Map<String, String> map = new TreeMap<String, String>();
+//                            map.put("timestamp", getTime());
+//                            map.put("supplier_id", supply_id);
+//                            map.put("operator_id", staff_id);
+//                            map.put("tagids", list.get(position).getId());
+//                            String content =  getpParameter2(map);
+//                            Log.i("fyg","content:"+content);
+//                            MediaType CONTENT_TYPE = MediaType.parse("application/x-www-form-urlencoded");
+//                            RequestBody  body = FormBody.create(CONTENT_TYPE,content);
 
                             RetrofitManager.getInstance().createReq(Api.class).deletMemberTag(supply_id, staff_id, body).subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())

@@ -12,7 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.zzti.retrofitdemo.ActionSheet;
+import com.zzti.retrofitdemo.util.ActionSheet;
 import com.zzti.retrofitdemo.R;
 import com.zzti.retrofitdemo.base.BaseResponse;
 import com.zzti.retrofitdemo.net.RetrofitManager;
@@ -22,6 +22,10 @@ import com.zzti.retrofitdemo.util.ImageUtils;
 import com.zzti.retrofitdemo.util.ToastUtils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -29,6 +33,7 @@ import okhttp3.RequestBody;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+
 /**
  * @author fengyonggge
  * @date 2017/2/7
@@ -55,20 +60,17 @@ public class UploadPhotoActivity extends AppCompatActivity {
 
     public void loadMore(String filepath) {
 
+
         File file = new File(filepath);
         // 创建 RequestBody，用于封装构建RequestBody
-        RequestBody requestFile =
-                RequestBody.create(MediaType.parse("multipart/form-data"), file);
-
+        RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         // MultipartBody.Part  和后端约定好Key，这里的partName是用image
-        MultipartBody.Part body =
-                MultipartBody.Part.createFormData("image", file.getName(), requestFile);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("image/*", file.getName(), requestFile);
 
         // 添加描述
         String descriptionString = "hello, 这是文件描述";
-        RequestBody description =
-                RequestBody.create(
-                        MediaType.parse("multipart/form-data"), descriptionString);
+        RequestBody description = RequestBody.create(MediaType.parse("text/plain"), descriptionString);
+
 
         RetrofitManager.getInstance().createReq(Api.class).upload(description, body)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -163,7 +165,7 @@ public class UploadPhotoActivity extends AppCompatActivity {
             case 4:
                 if (cropImageUri != null && data != null
                         && resultCode == -1) {
-                    Log.i("fyg", "裁剪后的图片cropImageUri"+cropImageUri);
+                    Log.i("fyg", "裁剪后的图片cropImageUri" + cropImageUri);
 
                     int degree = ImageUtils.getBitmapDegree(ImageUtils.getAbsoluteImagePath(
                             UploadPhotoActivity.this, cropImageUri));
@@ -186,7 +188,6 @@ public class UploadPhotoActivity extends AppCompatActivity {
         }
 
     }
-
 
 
     /**
@@ -228,4 +229,95 @@ public class UploadPhotoActivity extends AppCompatActivity {
 
     }
 
+
+    public void mulitPhoto() {
+
+        List<String> listString = new ArrayList<>();
+
+        List<File> files = new ArrayList<File>();
+        for (int i = 0; i < listString.size(); i++) {
+            File file = new File(listString.get(i));
+            files.add(file);
+        }
+
+        //组装partMap对象
+        Map<String, RequestBody> partMap = new HashMap<>();
+        for (File file : files) {
+            RequestBody fileBody = RequestBody.create(MediaType.parse("image/*"), file);
+            partMap.put("summary_pics[]\"; filename=\"" + file.getName() + "\"", fileBody);
+        }
+//        RequestBody signString = RequestBody.create(MediaType.parse("text/plain"), sign);
+//        partMap.put("sign" , signString);
+//        RequestBody publicKeyString = RequestBody.create(MediaType.parse("text/plain"), AppConfig.PUBLIC_KEY);
+//        partMap.put("publicKey" , publicKeyString);
+//        RequestBody timestampString = RequestBody.create(MediaType.parse("text/plain"), PublicParDefine.timestamp);
+//        partMap.put("timestamp" , timestampString);
+//        RequestBody formatted_addressString = RequestBody.create(MediaType.parse("text/plain"), formatted_address);
+//        partMap.put("summary_position" , formatted_addressString);
+
+
+        RetrofitManager.getInstance().createReq(Api.class).uploadePics2(
+                "", "", "", partMap)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<BaseResponse>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse baseResponse) {
+
+
+                    }
+                });
+    }
+
+
+    public void mulitPhoto2() {
+
+        List<String> listString = new ArrayList<>();
+
+
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)//表单类型
+                .addFormDataPart("summary_position", ""); //地理位置
+
+        //多张图片
+        for (int i = 0; i < listString.size(); i++) {
+            File file = new File(listString.get(i));
+            RequestBody imageBody = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            builder.addFormDataPart("summary_pics[]", file.getName(), imageBody);
+        }
+
+        List<MultipartBody.Part> parts = builder.build().parts();
+
+        RetrofitManager.getInstance().createReq(Api.class).uploadePics(
+                "", "", "", parts)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Subscriber<BaseResponse>() {
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseResponse baseResponse) {
+
+                    }
+                });
+
+    }
 }
